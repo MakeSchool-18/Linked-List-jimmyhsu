@@ -47,40 +47,107 @@ class LinkedList(object):
         """Return the length of this linked list by traversing its nodes"""
         # TODO: count number of items
         node_count = 0
+        # edge case - check if empty
         if self.head is not None:
             current_node = self.head
-            while current_node.next is not None:
+            # if the current node isn't empty, add one and go to next
+            while current_node is not None:
                 node_count += 1
                 current_node = current_node.next
+            # else:
         return node_count
 
     def append(self, item):
         """Insert the given item at the tail of this linked list"""
         # TODO: append given item
+        new_node = Node(item)
 
+        # check if there is a head, if not add it
         if self.head is None:
-            self.head = item
-
+            self.head = new_node
+        # check if there is a tail, if not add it
         if self.tail is None:
-            self.tail = item
+            self.tail = new_node
+        # if there is a tail, add it to the end
         else:
-            self.tail.next = item
-            self.tail = item
+            # set current tail's next to the new node
+            self.tail.next = new_node
+            # then override current tail to be the new node
+            self.tail = new_node
 
     def prepend(self, item):
         """Insert the given item at the head of this linked list"""
         # TODO: prepend given item
-        pass
+        new_node = Node(item)
+
+        # check if there is a tail, if not add it
+        if self.tail is None:
+            self.tail = new_node
+        # check if there is a head, if not add it
+        if self.head is None:
+            self.head = new_node
+        else:
+            # make new node's next pointer the current head
+            new_node.next = self.head
+            # then override current head to be the new node
+            self.head = new_node
 
     def delete(self, item):
         """Delete the given item from this linked list, or raise ValueError"""
         # TODO: find given item and delete if found
-        pass
+
+        # edge case - check if empty
+        if self.head is not None:
+            current_node = self.head
+            # edge case - check front of line: one time check to "delete" first item
+            if current_node.data is item:
+                # edge case - if also only item in array
+                if current_node.next is None:
+                    self.head = None
+                    self.tail = None
+                else:
+                    new_head = current_node.next
+                    # remove reference to the next node so this node can be garbage collected when "deleted"
+                    current_node.next = None
+                    # set current_node's next to no longer be the "deleted" node and be the node after
+                    self.head = new_head
+
+            while current_node is not None and current_node.next is not None:
+                # check if the next node's data matches
+                if current_node.next.data is item:
+                    # edge case - for end of line: save the node if the node after next isn't empty
+                    if current_node.next.next is not None:
+                        new_next_node = current_node.next.next
+                        # remove reference to the next node so this node can be garbage collected when "deleted"
+                        current_node.next.next = None
+                        # set current_node's next to no longer be the "deleted" node and be the node after
+                        current_node.next = new_next_node
+                    # there is no node after next, so just "delete" the reference to it now
+                    else:
+                        current_node.next = None
+                        # set current node to tail
+                        self.tail = current_node
+                # item not found in next node and the node after doesn't exist, so return error becuase it's end of list
+                elif current_node.next.next is None:
+                    raise ValueError('Linked List does not contain %i.' % (item))
+
+                current_node = current_node.next
+        # empty, so return error
+        else:
+            raise ValueError('Linked List is empty.')
 
     def find(self, quality):
         """Return an item from this linked list satisfying the given quality"""
         # TODO: find item where quality(item) is True
-        pass
+        # edge case - check if empty
+        if self.head is not None:
+            current_node = self.head
+            # if the current node isn't empty, add one and go to next
+            while current_node is not None:
+                # if true, return the data
+                if quality(current_node.data) is True:
+                    return current_node.data
+                current_node = current_node.next
 
 
 def test_linked_list():
